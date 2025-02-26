@@ -11,6 +11,23 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os #added this while switching from SQLite to PostgreSQL
+'''this for mySK'''
+import os
+
+from dotenv import load_dotenv
+
+# Loading environment variables from .env file (only in local dev)
+load_dotenv()
+
+# Getting the SECRET_KEY from the environment
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+
+# Ensuring that SECRET_KEY is set in the environment
+if not SECRET_KEY:
+    raise ValueError("The DJANGO_SECRET_KEY environment variable is not set.")
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +37,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*vlxjd62x9d%s(%i3((%jf!_we&m$4jg&t-9)0#d4#uy8(1_rc'
+#SECRET_KEY = 'django-insecure-*vlxjd62x9d%s(%i3((%jf!_we&m$4jg&t-9)0#d4#uy8(1_rc'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+#DEBUG = True
+DEBUG = False # I have changed this to false for production
+ALLOWED_HOSTS = ['grace-to-do.onrender.com', 'localhost']
 
 
 # Application definition
@@ -82,11 +99,23 @@ WSGI_APPLICATION = 'MyNewDjangoProject.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
+'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+'''
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('POSTGRES_DB'),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
+        'PORT': os.environ.get('POSTGRES_PORT', 5432),
     }
 }
 
